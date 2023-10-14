@@ -29,6 +29,11 @@ const Page = () => {
       quota: 10,
       features: [
         {
+          text: '6 messages per month',
+          footnote:
+            'The maximum allowed messages per month',
+        },
+        {
           text: '5 pages per PDF',
           footnote:
             'The maximum amount of pages per PDF-file.',
@@ -59,6 +64,11 @@ const Page = () => {
       quota: PLANS.find((p) => p.slug === 'pro')!.quota,
       features: [
         {
+          text: 'Unlimited messages per month',
+          footnote:
+            'Send as many messages as you want per month',
+        },
+        {
           text: '25 pages per PDF',
           footnote:
             'The maximum amount of pages per PDF-file.',
@@ -81,6 +91,34 @@ const Page = () => {
         },
       ],
     },
+    {
+      plan: 'Enterprise / Law Firms',
+      tagline: 'Get all your lawyers access plus the highest level of support',
+      quota: PLANS.find((p) => p.slug === 'pro')!.quota,
+      features: [
+        {
+          text: '25 pages per PDF',
+          footnote:
+            'The maximum amount of pages per PDF-file.',
+        },
+        {
+          text: '16MB file size limit',
+          footnote:
+            'The maximum file size of a single PDF file.',
+        },
+        {
+          text: 'Mobile-friendly interface',
+        },
+        {
+          text: 'Higher-quality responses',
+          footnote:
+            'Better algorithmic responses for enhanced content quality',
+        },
+        {
+          text: 'Priority support',
+        },
+      ],
+    }
   ]
 
   return (
@@ -131,7 +169,7 @@ const Page = () => {
                         {tagline}
                       </p>
                       <p className='my-5 font-display text-6xl font-semibold'>
-                        ${price}
+                        {price} /=
                       </p>
                       <p className='text-gray-500'>
                         per month

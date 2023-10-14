@@ -11,13 +11,13 @@ export function absoluteUrl(path: string) {
   if (process.env.VERCEL_URL)
     return `https://${process.env.VERCEL_URL}${path}`
   return `http://localhost:${
-    process.env.PORT ?? 3000
+    process.env.PORT ?? 3001
   }${path}`
 }
 
 export function constructMetadata({
-  title = "Quill - the SaaS for students",
-  description = "Quill is an open-source software to make chatting to your PDF files easy.",
+  title = "UGLawyer - ChatGPT for Ugandan Lawyers",
+  description = "Insights from Ugandan law documents in minutes",
   image = "/thumbnail.png",
   icons = "/favicon.ico",
   noIndex = false
