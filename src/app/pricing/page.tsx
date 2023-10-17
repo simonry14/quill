@@ -1,3 +1,4 @@
+
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import UpgradeButton from '@/components/UpgradeButton'
 import { buttonVariants } from '@/components/ui/button'
@@ -17,6 +18,9 @@ import {
   Minus,
 } from 'lucide-react'
 import Link from 'next/link'
+import Script from 'next/script'
+
+
 
 const Page = () => {
   const { getUser } = getKindeServerSession()
@@ -25,8 +29,8 @@ const Page = () => {
   const pricingItems = [
     {
       plan: 'Free',
-      tagline: 'For small side projects.',
-      quota: 10,
+      tagline: 'Get started for free',
+      quota: 2,
       features: [
         {
           text: '6 messages per month',
@@ -60,9 +64,10 @@ const Page = () => {
     },
     {
       plan: 'Pro',
-      tagline: 'For larger projects with higher needs.',
+      tagline: 'Get unlimited messages and upload bigger PDFs',
       quota: PLANS.find((p) => p.slug === 'pro')!.quota,
       features: [
+      
         {
           text: 'Unlimited messages per month',
           footnote:
@@ -93,16 +98,31 @@ const Page = () => {
     },
     {
       plan: 'Enterprise / Law Firms',
-      tagline: 'Get all your lawyers access plus the highest level of support',
-      quota: PLANS.find((p) => p.slug === 'pro')!.quota,
+      tagline: 'Get a customised solution for your Law Firm',
+      quota: 'Unlimited PDFs/mo included',
       features: [
         {
-          text: '25 pages per PDF',
+          text: 'Customised solution hosted on your premises',
+          footnote:
+            'Your sensitive documents dont leave your premises',
+        },
+        {
+          text: 'Unlimited number of Users',
+          footnote:
+            'Give access to all your lawyers and interns',
+        },
+        {
+          text: 'Unlimited messages per month',
+          footnote:
+            'Send as many messages as you want per month',
+        },
+        {
+          text: 'Unlimited pages per PDF',
           footnote:
             'The maximum amount of pages per PDF-file.',
         },
         {
-          text: '16MB file size limit',
+          text: 'Unlimited file size limit',
           footnote:
             'The maximum file size of a single PDF file.',
         },
@@ -121,9 +141,11 @@ const Page = () => {
     }
   ]
 
+ 
+
   return (
     <>
-      <MaxWidthWrapper className='mb-8 mt-24 text-center max-w-5xl'>
+      <MaxWidthWrapper className='mb-8 mt-24 text-center max-w-9xl'>
         <div className='mx-auto mb-10 sm:max-w-lg'>
           <h1 className='text-6xl font-bold sm:text-7xl'>
             Pricing
@@ -134,7 +156,7 @@ const Page = () => {
           </p>
         </div>
 
-        <div className='pt-12 grid grid-cols-1 gap-10 lg:grid-cols-2'>
+        <div className='pt-12 grid grid-cols-1 gap-10 lg:grid-cols-3'>
           <TooltipProvider>
             {pricingItems.map(
               ({ plan, tagline, quota, features }) => {
@@ -149,15 +171,21 @@ const Page = () => {
                     className={cn(
                       'relative rounded-2xl bg-white shadow-lg',
                       {
-                        'border-2 border-blue-600 shadow-blue-200':
-                          plan === 'Pro',
-                        'border border-gray-200':
-                          plan !== 'Pro',
+                        'border-2 border-blue-600 shadow-blue-200': plan === 'Pro',
+                        'border-2 border-red-600 shadow-red-200': plan === 'Enterprise / Law Firms',
+                        'border border-gray-200': plan === 'Free',
+                        //'border border-gray-200': plan !== 'Pro',
                       }
                     )}>
                     {plan === 'Pro' && (
                       <div className='absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-medium text-white'>
                         Upgrade now
+                      </div>
+                    )}
+
+                    {plan === 'Enterprise / Law Firms' && (
+                      <div className='absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-red-600 to-cyan-600 px-3 py-2 text-sm font-medium text-white'>
+                       Contact Us
                       </div>
                     )}
 
@@ -168,8 +196,11 @@ const Page = () => {
                       <p className='text-gray-500'>
                         {tagline}
                       </p>
-                      <p className='my-5 font-display text-6xl font-semibold'>
-                        {price} /=
+                      <p className='my-5 font-display text-5xl font-semibold'>
+                        {plan === 'Free' ? 'UGX 0' : ''}
+                        {plan === 'Pro' ? 'UGX 50,000' : ''}
+                        {plan === 'Enterprise / Law Firms' ? 'Custom Price' : ''}
+                      
                       </p>
                       <p className='text-gray-500'>
                         per month
@@ -179,8 +210,11 @@ const Page = () => {
                     <div className='flex h-20 items-center justify-center border-b border-t border-gray-200 bg-gray-50'>
                       <div className='flex items-center space-x-1'>
                         <p>
-                          {quota.toLocaleString()} PDFs/mo
-                          included
+                         
+
+                          {plan === 'Free' ? '2 PDFs/month' : ''}
+                        {plan === 'Pro' ? '100 PDFs/month' : ''}
+                        {plan === 'Enterprise / Law Firms' ? 'Unlimited PDFs/month' : ''}
                         </p>
 
                         <Tooltip delayDuration={300}>
@@ -248,7 +282,71 @@ const Page = () => {
                     </ul>
                     <div className='border-t border-gray-200' />
                     <div className='p-5'>
-                      {plan === 'Free' ? (
+                      {plan === 'Free'  && (
+                        <Link
+                          href={
+                            user ? '/dashboard' : '/sign-in'
+                          }
+                          className={buttonVariants({
+                            className: 'w-full',
+                            variant: 'secondary',
+                          })}>
+                          {user ? 'Upgrade now' : 'Sign up'}
+                          <ArrowRight className='h-5 w-5 ml-1.5' />
+                        </Link>
+                      ) }
+
+                {plan === 'Pro'  && (
+                  <div>
+                        <Link
+                          href={
+                            user ? 'https://m.beyonic.com/bl/SimonPeterMiyingo/O7M' : '/sign-in'
+                          }
+                          className={buttonVariants({
+                            className: 'w-full',
+                            
+                          })}>
+                          {user ? 'Upgrade now' : 'Sign up'}
+                          <ArrowRight className='h-5 w-5 ml-1.5' />
+                        </Link>
+                        <Script
+                        src="https://checkout.flutterwave.com/v3.js"
+                        />
+
+
+                        <form method="POST" action="https://checkout.flutterwave.com/v3/hosted/pay">
+  <div>
+    
+  </div>
+  <input type="hidden" name="public_key" value={process.env.FLW_PUBLIC_KEY_TEST} />
+  <input type="hidden" name="customer[email]" value={user.email} />
+  <input type="hidden" name="customer[name]" value={user.given_name + '' + user.family_name }  />
+  <input type="hidden" name="tx_ref" value="bitethtx-019203" />
+  <input type="hidden" name="amount" value="50000" />
+  <input type="hidden" name="currency" value="UGX" />
+  <input type="hidden" name="meta[token]" value="54" />
+ 
+  <button type="submit" id="start-payment-button">Pay Now</button>
+</form>
+                
+                        </div>
+                      ) }
+
+                  {plan === 'Enterprise / Law Firms'  && (
+                        <Link
+                          href={
+                            user ? '/contact' : '/contact'
+                          }
+                          className={buttonVariants({
+                            className: 'w-full',
+                            variant: 'destructive',
+                          })}>
+                          {user ? 'Contact Us' : 'Contact Us'}
+                          <ArrowRight className='h-5 w-5 ml-1.5' />
+                        </Link>
+                      ) }
+
+                      {/*plan === 'Pro'  ? (
                         <Link
                           href={
                             user ? '/dashboard' : '/sign-in'
@@ -271,7 +369,7 @@ const Page = () => {
                           {user ? 'Upgrade now' : 'Sign up'}
                           <ArrowRight className='h-5 w-5 ml-1.5' />
                         </Link>
-                      )}
+                      )*/}
                     </div>
                   </div>
                 )

@@ -1,13 +1,17 @@
 import { db } from '@/db'
 import { openai } from '@/lib/openai'
 import { getPineconeClient } from '@/lib/pinecone'
+//import { pinecone } from '@/lib/pinecone'
 import { SendMessageValidator } from '@/lib/validators/SendMessageValidator'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { PineconeStore } from 'langchain/vectorstores/pinecone'
+
 import { NextRequest } from 'next/server'
 
 import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { chroma_collection } from '@/lib/chroma'
+import { Chroma } from "langchain/vectorstores/chroma";
 
 export const POST = async (req: NextRequest) => {
   // endpoint for asking a question to a pdf file
@@ -49,21 +53,45 @@ export const POST = async (req: NextRequest) => {
     openAIApiKey: process.env.OPENAI_API_KEY,
   })
 
+  /*
   const pinecone = await getPineconeClient()
-  const pineconeIndex = pinecone.Index('quill')
+  const pineconeIndex = pinecone.Index('uglawyer')
 
   const vectorStore = await PineconeStore.fromExistingIndex(
     embeddings,
     {
+       
       pineconeIndex,
-      namespace: file.id,
+      //namespace: file.id,
     }
   )
 
-  const results = await vectorStore.similaritySearch(
-    message,
-    4
-  )
+  const results = await vectorStore.similaritySearch(message, 4)
+
+  */
+  /*console.log('PINECONE RESULTS: '+ results)
+
+  //trying chroma
+  const chroma_results = await chroma_collection.query({
+    nResults: 4,
+    queryTexts: 'uganda',
+  });
+
+  console.log('CHROMA RESULTS: '+ chroma_results.ids)*/
+
+  //langchain query chroma
+
+  const vectorStoreChroma = await Chroma.fromExistingCollection(
+    embeddings,
+    { collectionName: file.id,
+    //filter: {id: file.id}
+  
+  }
+  );
+  
+  const results_vectorStoreChroma = await vectorStoreChroma.similaritySearch(message, 4);
+  console.log(results_vectorStoreChroma);
+  
 
   const prevMessages = await db.message.findMany({
     where: {
@@ -108,7 +136,8 @@ export const POST = async (req: NextRequest) => {
   \n----------------\n
   
   CONTEXT:
-  ${results.map((r) => r.pageContent).join('\n\n')}
+  ${results_vectorStoreChroma.map((r) => r.pageContent).join('\n\n')}
+  
   
   USER INPUT: ${message}`,
       },

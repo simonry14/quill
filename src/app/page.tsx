@@ -1,17 +1,52 @@
+"use client"
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import Image from 'next/image'
+import {FlutterWaveButton, closePaymentModal, useFlutterwave } from 'flutterwave-react-v3';
+
+const config = {
+  public_key: process.env.FLW_SECRET_KEY,
+  tx_ref: 2343,
+  amount: 10000,
+  currency: 'UGX',
+  payment_options: 'card,mobilemoney,ussd',
+  customer: {
+    email: 'user@gmail.com',
+    phone_number: '070********',
+    name: 'john doe',
+  },
+  customizations: {
+    title: 'my Payment Title',
+    description: 'Payment for items in cart',
+    logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
+  },
+};
+
+const fwConfig = {
+  ...config,
+  
+  text: 'Pay with Flutterwave!',
+  callback: (response: any) => {
+     console.log(response);
+    closePaymentModal() // this will close the modal programmatically
+  },
+  onClose: () => {},
+};
 
 export default function Home() {
   return (
     <>
-      <MaxWidthWrapper className='mb-12 mt-28 sm:mt-40 flex flex-col items-center justify-center text-center'>
+      <MaxWidthWrapper className='mb-8 mt-28 sm:mt-40 flex flex-col items-center justify-center text-center'>
         <div className='mx-auto mb-4 flex max-w-fit items-center justify-center space-x-2 overflow-hidden rounded-full border border-gray-200 bg-white px-7 py-2 shadow-md backdrop-blur transition-all hover:border-gray-300 hover:bg-white/50'>
           <p className='text-sm font-semibold text-gray-700'>
             Your Ugandan Law Expert
           </p>
+          
+          <FlutterWaveButton {...fwConfig} />
+
+         
         </div>
         <h1 className='max-w-4xl text-5xl font-bold md:text-6xl lg:text-7xl'>
           Chat with your{' '}
@@ -83,7 +118,7 @@ export default function Home() {
       </div>
 
       {/* Feature section */}
-      <div className='mx-auto mb-32 mt-32 max-w-5xl sm:mt-56'>
+      <div className='mx-auto mb-32 mt-16 max-w-5xl sm:mt-56'>
         <div className='mb-12 px-6 lg:px-8'>
           <div className='mx-auto max-w-2xl sm:text-center'>
             <h2 className='mt-2 font-bold text-4xl text-gray-900 sm:text-5xl'>
@@ -108,13 +143,13 @@ export default function Home() {
               </span>
               <span className='mt-2 text-zinc-700'>
                 Either starting out with a free plan or
-                choose our{' '}
+                choose our{' '} 
                 <Link
                   href='/pricing'
                   className='text-blue-700 underline underline-offset-2'>
                   pro plan
                 </Link>
-                .
+                {' '} for only 50,000/= a month.
               </span>
             </div>
           </li>
@@ -124,11 +159,11 @@ export default function Home() {
                 Step 2
               </span>
               <span className='text-xl font-semibold'>
-                Upload your PDF file
+                Upload your PDF file or Choose from the many provided
               </span>
               <span className='mt-2 text-zinc-700'>
                 We&apos;ll process your file and make it
-                ready for you to chat with.
+                ready for you to chat with. 
               </span>
             </div>
           </li>
@@ -141,8 +176,8 @@ export default function Home() {
                 Start asking questions
               </span>
               <span className='mt-2 text-zinc-700'>
-                It&apos;s that simple. Try out Quill today -
-                it really takes less than a minute.
+                It&apos;s that simple. Try it out today -
+                it really takes less than a minute. Makes preparing for your cases a breeze.
               </span>
             </div>
           </li>

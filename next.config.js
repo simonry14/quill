@@ -15,12 +15,19 @@ const nextConfig = {
     ]
   },
 
-  webpack: (
-    config,
-    { buildId, dev, isServer, defaultLoaders, webpack }
-  ) => {
+  webpack: ( config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     config.resolve.alias.canvas = false
     config.resolve.alias.encoding = false
+
+    config.resolve ={
+      ...config.resolve,
+      fallback:{
+        "fs": false,
+        "path": false,
+        "os": false
+      }
+    }
+
     return config
   },
 }

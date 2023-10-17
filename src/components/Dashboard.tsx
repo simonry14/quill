@@ -45,16 +45,16 @@ const Dashboard = ({subscriptionPlan}: PageProps) => {
   return (
     <main className='mx-auto max-w-7xl md:p-10'>
       <div className='mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0'>
-        <h1 className='mb-3 font-bold text-5xl text-gray-900'>
-          My Files
-        </h1>
+        <h2 className='mb-3 font-bold text-5xl text-gray-900'>
+          My Uploaded Files
+        </h2>
 
         <UploadButton isSubscribed={subscriptionPlan.isSubscribed} />
       </div>
 
       {/* display all user files */}
       {files && files?.length !== 0 ? (
-        <ul className='mt-8 grid grid-cols-1 gap-6 divide-y divide-zinc-200 md:grid-cols-2 lg:grid-cols-3'>
+        <ul className='mt-4 grid grid-cols-1 gap-6 divide-y divide-zinc-200 md:grid-cols-2 lg:grid-cols-3'>
           {files
             .sort(
               (a, b) =>
@@ -72,7 +72,7 @@ const Dashboard = ({subscriptionPlan}: PageProps) => {
                     <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
                     <div className='flex-1 truncate'>
                       <div className='flex items-center space-x-3'>
-                        <h3 className='truncate text-lg font-medium text-zinc-900'>
+                        <h3 className='truncate text-md font-medium text-zinc-900'>
                           {file.name}
                         </h3>
                       </div>
@@ -80,7 +80,7 @@ const Dashboard = ({subscriptionPlan}: PageProps) => {
                   </div>
                 </Link>
 
-                <div className='px-6 mt-4 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500'>
+                <div className='px-6 mt-2 grid grid-cols-3 place-items-center py-2 gap-6 text-xs text-zinc-500'>
                   <div className='flex items-center gap-2'>
                     <Plus className='h-4 w-4' />
                     {format(
@@ -119,9 +119,27 @@ const Dashboard = ({subscriptionPlan}: PageProps) => {
           <h3 className='font-semibold text-xl'>
             Pretty empty around here
           </h3>
-          <p>Let&apos;s upload your first PDF.</p>
+          <p>Upload your first PDF or Choose from the Legislations/ Judgements below.</p>
         </div>
       )}
+
+<div className='mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0'>
+        <h2 className='mb-3 font-bold text-5xl text-gray-900'>
+          Uganda Legislations
+        </h2>
+
+Pick from ULII webpage
+        
+      </div>
+      <div className='mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0'>
+        <h2 className='mb-3 font-bold text-5xl text-gray-900'>
+          Court Judgements
+        </h2>
+
+Pick from ULII webpage
+        
+      </div>
+      
     </main>
   )
 }

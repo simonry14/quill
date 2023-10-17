@@ -8,9 +8,14 @@ import {
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { PineconeStore } from 'langchain/vectorstores/pinecone'
+//import { pinecone } from '@/lib/pinecone'
 import { getPineconeClient } from '@/lib/pinecone'
 import { getUserSubscriptionPlan } from '@/lib/stripe'
 import { PLANS } from '@/config/stripe'
+
+//Added by simon to use chroma
+import {Chroma} from 'langchain/vectorstores/chroma'
+import { chroma_collection } from '@/lib/chroma'
 
 const f = createUploadthing()
 
@@ -55,9 +60,7 @@ const onUploadComplete = async ({
   })
 
   try {
-    const response = await fetch(
-      `https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`
-    )
+    const response = await fetch(`https://uploadthing-prod.s3.us-west-2.amazonaws.com/${file.key}`)
 
     const blob = await response.blob()
 
@@ -68,20 +71,12 @@ const onUploadComplete = async ({
     const pagesAmt = pageLevelDocs.length
 
     const { subscriptionPlan } = metadata
-    const { isSubscribed } = subscriptionPlan
+    //const { isSubscribed} = subscriptionPlan
 
-    const isProExceeded =
-      pagesAmt >
-      PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf
-    const isFreeExceeded =
-      pagesAmt >
-      PLANS.find((plan) => plan.name === 'Free')!
-        .pagesPerPdf
-
-    if (
-      (isSubscribed && isProExceeded) ||
-      (!isSubscribed && isFreeExceeded)
-    ) {
+    const isProExceeded = pagesAmt > PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf
+    const isFreeExceeded = pagesAmt > PLANS.find((plan) => plan.name === 'Free')!.pagesPerPdf
+/*
+    if ( (isSubscribed && isProExceeded) || (!isSubscribed && isFreeExceeded)) {
       await db.file.update({
         data: {
           uploadStatus: 'FAILED',
@@ -90,11 +85,15 @@ const onUploadComplete = async ({
           id: createdFile.id,
         },
       })
-    }
+    } */
+
+    const embeddings = new OpenAIEmbeddings({
+      openAIApiKey: process.env.OPENAI_API_KEY,
+    })
 
     // vectorize and index entire document
-    const pinecone = await getPineconeClient()
-    const pineconeIndex = pinecone.Index('quill')
+   /* const pinecone = await getPineconeClient()
+    const pineconeIndex = pinecone.Index('uglawyer')
 
     const embeddings = new OpenAIEmbeddings({
       openAIApiKey: process.env.OPENAI_API_KEY,
@@ -104,10 +103,51 @@ const onUploadComplete = async ({
       pageLevelDocs,
       embeddings,
       {
+       
         pineconeIndex,
-        namespace: createdFile.id,
+        //namespace: createdFile.id,
       }
     )
+*/
+//try adding to chroma db
+    const chromadb = await Chroma.fromDocuments(
+      pageLevelDocs,
+
+      embeddings,
+      {
+        collectionName: createdFile.id,
+        url: "http://localhost:8000", // Optional, will default to this value
+        numDimensions: 1536,
+        collectionMetadata: {
+          "hnsw:space": "cosine",
+          "filename": createdFile.name,
+          "user": createdFile.userId,
+        }, // Optional, can be used to specify the distance method of the embedding space https://docs.trychroma.com/usage-guide#changing-the-distance-function
+      }
+    )
+
+    /*
+
+  const response_chroma = await chromadb.similaritySearch("judge", 1);
+
+console.log('CHROMA_RESPONSE:' + response_chroma); */
+
+//another chroma example directely sans langchain
+
+/*await chroma_collection.add({
+  ids: [createdFile.id],
+  metadatas: [{ source: createdFile.name }],
+  documents: loader.parse.toString(),
+}); */
+/*
+await chroma_collection.add({
+  ids: [createdFile.id],
+  metadatas: [{ source: createdFile.name }],
+  documents: loader.parse.toString(),
+});
+*/
+
+
 
     await db.file.update({
       data: {
@@ -118,6 +158,7 @@ const onUploadComplete = async ({
       },
     })
   } catch (err) {
+    console.log(err)
     await db.file.update({
       data: {
         uploadStatus: 'FAILED',
@@ -139,3 +180,4 @@ export const ourFileRouter = {
 } satisfies FileRouter
 
 export type OurFileRouter = typeof ourFileRouter
+
